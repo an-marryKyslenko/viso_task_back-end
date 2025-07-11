@@ -7,6 +7,8 @@ $ npm install
 
 ## Compile and run the project
 
+## Rename .env.simple to .env
+
 ```bash
 # development
 $ npm run start
