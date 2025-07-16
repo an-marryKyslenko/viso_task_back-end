@@ -1,24 +1,102 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, HttpCode, HttpStatus, NotFoundException, Post, Req, Res, UnauthorizedException } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-
-type User = {
-	email: string;
-	password: string;
-	firstName: string;
-	lastName: string
-}
+import { NewUser } from "./auth.type";
+import { Request, Response } from "express";
+import { JwtService } from "@nestjs/jwt";
+import { UsersService } from "src/users/users.service";
+import { generateTokens } from "./local.strategy";
+import { Public } from "src/constants";
 
 @Controller('auth')
 export class AuthController {
-	constructor(private authService: AuthService) {}
+	constructor(
+		private authService: AuthService,
+		private userService: UsersService, 
+		private jwtService: JwtService
+	) {}
 
+	@Public()
 	@Post('register')
-	async register(@Body() body: User) {
-		return this.authService.register(body.email, body.password, body.firstName, body.lastName);
+	async register(@Res({passthrough: true}) res: Response, @Body() body: NewUser) {
+		const {accessToken, refreshToken, user} = await this.authService.register(body);
+
+		res.cookie('refresh_token', refreshToken, {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'strict',
+			maxAge: 7 * 24 * 60 * 60 * 1000,
+		})
+
+		res.cookie('access_token', accessToken, {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'strict',
+			maxAge: 15 * 60 * 1000,
+		});
+		
+		return {user};
 	}
 
+	@Public()
 	@Post('login')
-	async login(@Body() body) {
-		return this.authService.login(body.email, body.password);
+	async login(@Res({passthrough: true}) res: Response, @Body() body: {email: string, password: string}) {
+		const {accessToken, refreshToken, user} = await this.authService.login(body);
+
+		res.cookie('refresh_token', refreshToken, {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'strict',
+			maxAge: 7 * 24 * 60 * 60 * 1000,
+		})
+
+		res.cookie('access_token', accessToken, {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'strict',
+			maxAge: 15 * 60 * 1000,
+		});
+		return {user};
 	}
+
+	@Public()
+	@Post('refresh')
+	async refresh(@Req() req: Request) {
+		const refreshToken = req.cookies['refresh_token'];
+
+		try {
+			const payload = await this.jwtService.verifyAsync(refreshToken);
+			const user = await this.userService.findByEmail(payload.email);
+
+			if(!user) {
+				throw new NotFoundException()
+			}
+
+			const {accessToken} = await generateTokens(user, this.jwtService)
+			
+			return { accessToken };
+		} catch {
+			throw new UnauthorizedException();
+		}
+	}
+
+	@HttpCode(HttpStatus.OK)
+	@Post('logout')
+	@Public()
+	async logout(@Res({ passthrough: true }) res: Response) {
+		res.clearCookie('refresh_token', {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'strict',
+		});
+		
+		res.clearCookie('access_token', {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'strict',
+		});
+
+		return { message: 'Logged out successfully' };
+	}
+
+
 }

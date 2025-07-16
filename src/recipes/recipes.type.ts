@@ -1,6 +1,6 @@
 export type Recipe = {
 	title: string;
-	description?: string;
+	description: string;
 	time: string;
 	ingredients: { name: string }[];
 	instructions: string;

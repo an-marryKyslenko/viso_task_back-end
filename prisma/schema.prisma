@@ -21,6 +21,7 @@ model User {
   firstName      String
   lastName      String
   recipes   Recipe[]
+  comments Comment[]
 }
 
 model Recipe {
@@ -33,4 +34,16 @@ model Recipe {
   createdAt    DateTime @default(now())
   userId       String
   user         User     @relation(fields: [userId], references: [id])
+  comments Comment[]
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  text      String
+  userId    String
+  recipeId  String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+  recipe    Recipe   @relation(fields: [recipeId], references: [id])
 }

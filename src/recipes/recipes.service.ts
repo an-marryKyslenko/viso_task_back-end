@@ -10,8 +10,28 @@ export class RecipesService {
 		return this.prisma.recipe.create({ data });
 	}
 
+	async update(id: string, data: Recipe) {
+		return this.prisma.recipe.update({
+			where: {
+				id
+			}, 
+			data: {...data, id}
+		});
+	}
+
 	async findAll() {
 		return this.prisma.recipe.findMany({ orderBy: { createdAt: 'desc' } });
+	}
+
+	async findByUser(userId: string) {
+		return this.prisma.recipe.findMany({
+			where: {
+				userId,
+			},
+			orderBy: {
+				createdAt: 'desc'
+			}
+		})
 	}
 
 	async findOne(id: string) {
