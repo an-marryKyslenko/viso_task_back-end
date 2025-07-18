@@ -1,78 +1,87 @@
+# FlavorAI Backend
 
-## Project setup
+The backend API for FlavorAI — a secure recipe-sharing platform. Built with **NestJS**, it handles user authentication, recipe data, and comments with clean architecture and cookie-based auth.
+
+## DEMO
+
+Link to demo [FlavorAI](https://flavorai.vercel.app/)
+
+## Tech Stack
+
+- NestJS
+- TypeORM / Prisma
+- PostgreSQL
+- CookieParser + Guards
+- HTTP-only cookie-based JWT auth
+
+##  Authentication Flow
+
+- Login → sets `access_token` & `refresh_token` as HTTP-only cookies
+- Protected routes → validated via `AuthGuard`
+- `/auth/refresh` → refreshes access token
+- `onDelete: Cascade` → Comments are deleted when user or recipe is removed
+
+## Getting Started
+
+1. Clone the repo:
+```bash
+git clone https://github.com/yourusername/viso_task_back-end.git
+```
+2. Install dependencies:
 
 ```bash
-$ npm install
+npm install
 ```
 
-## Compile and run the project
+3. Set up .env:
 
-## Rename .env.simple to .env
+```env
+DATABASE_URL=your_postgres_url
+JWT_SECRET=your_secret_key
+CLIENT_SITE=http://localhost:3000
+```
+
+4. Run server:
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm run start:dev
 ```
 
-## Link to front-end repo 
-Open [viso_task_front-end](https://github.com/an-marryKyslenko/viso_task_front-end)
-
-
-## Run tests
+## Migration
+Create and apply migrations using Prisma:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npx prisma migrate dev --name init
 ```
+
+For deployment:
+
+```bash
+npx prisma migrate deploy
+```
+
+## API Endpoints
+
+- POST /auth/login
+
+- POST /auth/refresh
+
+- GET /auth/whoami
+
+- GET /recipes
+
+- POST /comments
+
+DELETE /comments/:id
 
 ## Deployment
+- Hosted on Render
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+- Enable CORS:
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+```ts
+app.enableCors({
+  origin: process.env.CLIENT_SITE,
+  credentials: true,
+});
 ```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).

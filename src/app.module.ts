@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { RecipesModule } from './recipes/recipes.module';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { RecipesModule } from './recipes/recipes.module';
     }),
     AuthModule,
     UsersModule,
-    RecipesModule
+    RecipesModule,
+    CommentsModule
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
