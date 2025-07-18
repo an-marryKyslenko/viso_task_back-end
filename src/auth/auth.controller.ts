@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, NotFoundException, Post, Req, Res, UnauthorizedException } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Post, Req, Res, UnauthorizedException, UseGuards } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { NewUser } from "./auth.type";
 import { Request, Response } from "express";
@@ -6,6 +6,7 @@ import { JwtService } from "@nestjs/jwt";
 import { UsersService } from "src/users/users.service";
 import { generateTokens } from "./local.strategy";
 import { Public } from "src/constants";
+import { AuthGuard } from "./auth.guard";
 
 @Controller('auth')
 export class AuthController {
@@ -83,6 +84,19 @@ export class AuthController {
 			throw new UnauthorizedException();
 		}
 	}
+
+	@UseGuards(AuthGuard)
+	@Get('whoami')
+	getMe(@Req() req: Request) {
+	return { user: req['user'] ?? null };
+	}
+
+	@Get('debug-cookies')
+	@Public()
+	debug(@Req() req: Request) {
+	return { cookies: req.cookies };
+	}
+
 
 	@HttpCode(HttpStatus.OK)
 	@Post('logout')
