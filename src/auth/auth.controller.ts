@@ -22,14 +22,14 @@ export class AuthController {
 
 		res.cookie('refresh_token', refreshToken, {
 			httpOnly: true,
-			secure: true,
+			secure: false,
 			sameSite: 'strict',
 			maxAge: 7 * 24 * 60 * 60 * 1000,
 		})
 
 		res.cookie('access_token', accessToken, {
 			httpOnly: true,
-			secure: true,
+			secure: false,
 			sameSite: 'strict',
 			maxAge: 15 * 60 * 1000,
 		});
@@ -44,14 +44,14 @@ export class AuthController {
 
 		res.cookie('refresh_token', refreshToken, {
 			httpOnly: true,
-			secure: true,
+			secure: false,
 			sameSite: 'strict',
 			maxAge: 7 * 24 * 60 * 60 * 1000,
 		})
 
 		res.cookie('access_token', accessToken, {
 			httpOnly: true,
-			secure: true,
+			secure: false,
 			sameSite: 'strict',
 			maxAge: 15 * 60 * 1000,
 		});
@@ -73,7 +73,7 @@ export class AuthController {
 			
 			res.cookie('access_token', accessToken, {
 				httpOnly: true,
-				secure: true,
+				secure: false,
 				sameSite: 'strict',
 				maxAge: 15 * 60 * 1000,
 			});
@@ -90,13 +90,13 @@ export class AuthController {
 	async logout(@Res({ passthrough: true }) res: Response) {
 		res.clearCookie('refresh_token', {
 			httpOnly: true,
-			secure: true,
+			secure: false,
 			sameSite: 'strict',
 		});
 		
 		res.clearCookie('access_token', {
 			httpOnly: true,
-			secure: true,
+			secure: false,
 			sameSite: 'strict',
 		});
 
