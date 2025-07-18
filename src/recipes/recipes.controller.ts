@@ -43,4 +43,11 @@ export class RecipesController {
 	remove(@Param('id') id: string) {
 		return this.recipesService.remove(id);
 	}
+
+	@UseGuards(AuthGuard)
+	@Get('whoami')
+	getMe(@Req() req: Request) {
+	return { user: req['user'] ?? null };
+	}
+
 }
