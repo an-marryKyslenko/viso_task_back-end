@@ -7,9 +7,12 @@ async function bootstrap() {
 
   app.use(cookieParser());
   app.enableCors({
-    origin: process.env.CLIENT ?? 'http://localhost:3000',
+    origin: process.env.CLIENT_SITE || 'http://localhost:3000',
     credentials: true
   })
+
+  // app.set('trust proxy', 1);
+
 
   await app.listen(process.env.PORT ?? 3001);
 }

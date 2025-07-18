@@ -60,20 +60,25 @@ export class AuthController {
 
 	@Public()
 	@Post('refresh')
-	async refresh(@Req() req: Request) {
+	async refresh(@Res({ passthrough: true }) res: Response, @Req() req: Request) {
 		const refreshToken = req.cookies['refresh_token'];
 
 		try {
 			const payload = await this.jwtService.verifyAsync(refreshToken);
 			const user = await this.userService.findByEmail(payload.email);
 
-			if(!user) {
-				throw new NotFoundException()
-			}
+			if (!user) throw new NotFoundException();
 
 			const {accessToken} = await generateTokens(user, this.jwtService)
 			
-			return { accessToken };
+			res.cookie('access_token', accessToken, {
+				httpOnly: true,
+				secure: true,
+				sameSite: 'strict',
+				maxAge: 15 * 60 * 1000,
+			});
+
+			return { message: 'refreshed'};
 		} catch {
 			throw new UnauthorizedException();
 		}
