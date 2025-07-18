@@ -85,19 +85,6 @@ export class AuthController {
 		}
 	}
 
-	@UseGuards(AuthGuard)
-	@Get('whoami')
-	getMe(@Req() req: Request) {
-	return { user: req['user'] ?? null };
-	}
-
-	@Get('debug-cookies')
-	@Public()
-	debug(@Req() req: Request) {
-	return { cookies: req.cookies };
-	}
-
-
 	@HttpCode(HttpStatus.OK)
 	@Post('logout')
 	@Public()
